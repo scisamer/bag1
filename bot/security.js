@@ -2,11 +2,18 @@
 const { Context, Telegraf, Markup } = require('telegraf');
 const { session } = require('telegraf');
 const db = require('../database/db');
+const { getGruopRun } = require("./startStop");
 
 async function security(ctx, next) {
+	if (!ctx.message) return next();
+	if (ctx.message.chat.type == "group") {
+		if (getGruopRun() === false) {
+			return false;
+		}
+	}
+
 	if (ctx.session == undefined) {
 		ctx.session = {};
-		if (!ctx.message) return next();
 		var uid = ctx.message.from.id;
 
 		var usr = await db.users.asyncFindOne({ id: uid });

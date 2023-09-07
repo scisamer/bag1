@@ -13,8 +13,9 @@ async function admin(ctx, next) {
 	if (!ctx.message) return next();
 	var text = ctx.message.text;
 	var uid = ctx.message.from.id;
+	const type = ctx.message.chat.type;
 
-	if (ctx.session.isAdmin) {
+	if (ctx.session.isAdmin && type == "private") {
 
 		// ----------------- Admin Panel ---------------------
 		const reply = async (text, keyboard) => {

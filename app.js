@@ -3,7 +3,6 @@ const { Context, Telegraf, Markup, session, } = require('telegraf');
 const { Keyboard } = require('telegram-keyboard');
 var fs = require("fs");
 const db = require('./database/db');
-
 // vars
 const admin = require('./admin/admin');
 const base = require('./bot/base');
@@ -15,7 +14,7 @@ process.on('uncaughtException', function (err) {
 });
 
 // const bot = new Telegraf(process.env.BOT_TOKEN);
-const bot = new Telegraf('6591946014:AAGhEeI91KqmnRMhOplp3IiP23NOOOKgj40');
+const bot = new Telegraf('6341704524:AAHHqfDKZsDrcptcbJq5Of6lfHXD0HfBR24');
 bot.use(session());
 
 // bot.use(ctx => {

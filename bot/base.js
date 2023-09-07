@@ -12,12 +12,14 @@ async function base(ctx, next) {
 	if (!ctx.message) return next();
 	var text = ctx.message.text;
 	var uid = ctx.message.from.id;
+	const type = ctx.message.chat.type;
 	const index = menu.getIndexByText(text);
 	if (getRun() === false) return next();
+	const replyTo = type == "group" ? {reply_to_message_id: ctx.message.message_id} : {};
 
 	if (text == "/help") return ctx.reply(`
 	طريقة استخدام البوت:
-	`);
+	`,replyTo);
 
 	if (text == "/start") {
 		const menuList = menu.get();
@@ -49,11 +51,11 @@ async function base(ctx, next) {
 	} else {
 		const fileId = menu.getFileByTime(text);
 		if (fileId) {
-			const receiver_chat_id = ctx.message.from.id;
-			ctx.telegram.sendDocument(receiver_chat_id, fileId);
+			ctx.replyWithDocument(fileId,replyTo);
 			return;
 		}
-		return next();
+		if (type !== "group")
+			return next();
 	}
 }
 

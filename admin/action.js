@@ -6,6 +6,7 @@ const menu = require("../menu/menu");
 const { Markup } = require("telegraf");
 module.exports = function onAction(bot) {
   bot.action('sendToAll', async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     // رسالة البث المراد إرسالها إلى المشتركين
     ctx.session.cmd = 'sendtoall';
     ctx.reply(`اكتب رسالتك ليتم ارسالها الى جميع المشتركين`);
@@ -14,6 +15,7 @@ module.exports = function onAction(bot) {
   });
 
   bot.action("runBot", async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     var isRun = getRun();
     if (isRun) var msg = "تم ايقاف البوت";
     else var msg = "تم تفعيل البوت";
@@ -23,6 +25,7 @@ module.exports = function onAction(bot) {
   });
 
   bot.action("listAll", async (ctx, e) => {
+    if (!ctx.session.isAdmin) return;
     var users = await db.users.asyncFind({});
     var message = `عدد المشتركين الكلي: ${users.length}`;
 
@@ -31,18 +34,21 @@ module.exports = function onAction(bot) {
 
 
   bot.action("manger", async (ctx, e) => {
+    if (!ctx.session.isAdmin) return;
     showAdminPanel(ctx, 2, "update")
     await ctx.answerCbQuery();
 
   });
 
   bot.action(/^item-(\d+)$/, async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     ctx.session.cmdData = ctx.match[1];
     showAdminPanel(ctx, 3, "update");
     await ctx.answerCbQuery();
   });
 
   bot.action("empty", async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     const title = menu.empty(ctx.session.cmdData);
     ctx.session.cmdData = null;
     ctx.reply(`تم تفريغ ${title} بنجاح`);
@@ -50,11 +56,13 @@ module.exports = function onAction(bot) {
   });
 
   bot.action("addpdf", async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     showAdminPanel(ctx, 4, "update");
     await ctx.answerCbQuery();
   });
 
   bot.action(/^addto-(\d+)$/, async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     ctx.session.cmdDataItem = ctx.match[1];
     ctx.session.cmd = "addpdf1";
     ctx.reply(`
@@ -65,12 +73,14 @@ module.exports = function onAction(bot) {
   });
 
   bot.action(/^back-(\d+)$/, async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     showAdminPanel(ctx,ctx.match[1], "update" );
     await ctx.answerCbQuery();
   });
 
 
   bot.action("set-text", async (ctx) => {
+    if (!ctx.session.isAdmin) return;
     ctx.reply("ارسل النص الجديد");
     ctx.session.cmd = "settext";
     await ctx.answerCbQuery();
