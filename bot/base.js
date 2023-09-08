@@ -26,13 +26,14 @@ async function base(ctx, next) {
 
 	const index = menu.getIndexByText(text);
 	if (getRun() === false) return next();
-	const replyTo = /group/.test(type) == "group" ? {reply_to_message_id: ctx.message.message_id} : {};
+	// const replyTo = /group/.test(type) == "group" ? {reply_to_message_id: ctx.message.message_id} : {};
+	const replyTo = {reply_to_message_id: ctx.message.message_id}
 
 	if (text == "/help") return ctx.reply(`
 	طريقة استخدام البوت:
 	`,replyTo);
 
-	if (text == "/start" && text == "عرض القائمة") {
+	if (text == "/start" || text == "عرض القائمة") {
 		const menuList = menu.get();
 		return await ctx.reply('مرحبا بك', Markup
 		.keyboard(menuList)
