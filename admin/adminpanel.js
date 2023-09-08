@@ -1,8 +1,9 @@
 const { Markup } = require("telegraf");
-const { getRun } = require("../bot/startStop");
+const { getRun, getGruopRun } = require("../bot/startStop");
 const adminBack = "رجوع 🔙";
 async function showAdminPanel(ctx, path, type) {
     var s = getRun() ? "نشط ✅" : "معطل ❌";
+    var gs = getGruopRun() ? "نشط ✅" : "معطل ❌";
 
     var buttons;
 
@@ -14,10 +15,11 @@ async function showAdminPanel(ctx, path, type) {
             ],
         [
             Markup.button.callback(`حالة البوت ${s}`, 'runBot'),
-            Markup.button.callback('اذاعة رسالة 🔊', 'sendToAll'),
+            Markup.button.callback(`المجموعات ${gs}`, 'group'),
         ],
         [
             Markup.button.callback('عدد المشركين 👥', 'listAll'),
+            Markup.button.callback('اذاعة رسالة 🔊', 'sendToAll'),
         ]
     ]
     }

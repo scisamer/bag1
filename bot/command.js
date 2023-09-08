@@ -1,12 +1,9 @@
 const { Context, session, Markup } = require('telegraf');
-const tgresolve = require("tg-resolve");
 const db = require('../database/db');
 var fs = require("fs");
+var path = require('path');
 const request = require("request-promise");
-const excelToJson = require('convert-excel-to-json');
-const { MongoClient } = require('mongodb');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 async function command(ctx, next) {
     if (!ctx.message) return next();
     var text = ctx.message.text;
@@ -36,7 +33,7 @@ async function command(ctx, next) {
             const setMenu = require("../menu/menu").set;
             const check = setMenu(ctx.session.cmdData, text);
             if (check === true) ctx.reply(`تمت العملية بنجاح`);
-            else    ctx.reply(`فشلت العملية`);
+            else ctx.reply(`فشلت العملية`);
             break;
         case 'addpdf1':
             ctx.session.cmdData = text;
@@ -50,9 +47,20 @@ async function command(ctx, next) {
             if (!ctx.message.document) return ctx.reply(`لقد ارسلت رسالة نصية يجب عليك ارسال ملف (مستند) لاضافته`);
             // ============================================================================= //
             const fileId = ctx.message.document.file_id;
+            const name = ctx.message.document.file_name;
             const title = ctx.session.cmdData;
             const index = ctx.session.cmdDataItem;
-            addData(index, title, fileId);
+
+
+            //===================== احضار رابط الملف من خلال الايدي =================================
+            var url = await ctx.telegram.getFileLink(fileId);
+            //=========================== احضار المف من خلال الرابط =================================
+            const response = await request.get(url.href, { encoding: null });
+            const file_ext = path.extname(name);
+            const localName = `D${Date.now()}${file_ext}`;
+            addData(index, title, fileId, localName, name);
+            const docPath = process.cwd() + "/documents"
+            fs.writeFileSync(`${docPath}/${localName}`, response);
             ctx.reply("تم انشاء الملف بنجاح");
             ctx.session.cmdData = null;
             ctx.session.cmd = null;

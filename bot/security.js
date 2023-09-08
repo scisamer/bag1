@@ -5,8 +5,17 @@ const db = require('../database/db');
 const { getGruopRun } = require("./startStop");
 
 async function security(ctx, next) {
-	if (!ctx.message) return next();
-	if (ctx.message.chat.type == "group") {
+
+	console.log(ctx);
+	const message = ctx.message ? ctx.message : (ctx.update && ctx.update.callback_query) ? ctx.update.callback_query.message : null;
+	if (!message) {
+		console.log("===================================================");
+		console.log(ctx);
+		console.log("===================================================");
+		process.exit();
+	}
+
+	if (message.chat.type == "group") {
 		if (getGruopRun() === false) {
 			return false;
 		}
@@ -14,7 +23,10 @@ async function security(ctx, next) {
 
 	if (ctx.session == undefined) {
 		ctx.session = {};
-		var uid = ctx.message.from.id;
+		var uid;
+		if (ctx.update.callback_query)
+		uid = ctx.update.callback_query.from.id;
+		else uid = message.from.id;
 
 		var usr = await db.users.asyncFindOne({ id: uid });
 		if (usr === null) {

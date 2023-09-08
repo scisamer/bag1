@@ -1,4 +1,4 @@
-const { getRun, setRun } = require("../bot/startStop");
+const { getRun, setRun, getGruopRun, setGruopRun } = require("../bot/startStop");
 const { showAdminPanel, showAddData } = require("./adminpanel");
 const db = require('../database/db');
 const menu = require("../menu/menu");
@@ -20,6 +20,16 @@ module.exports = function onAction(bot) {
     if (isRun) var msg = "تم ايقاف البوت";
     else var msg = "تم تفعيل البوت";
     setRun(!isRun);
+    await ctx.answerCbQuery(msg);
+    showAdminPanel(ctx, "1", "update");
+  });
+
+  bot.action("group", async (ctx) => {
+    if (!ctx.session.isAdmin) return;
+    var gbGrun = getGruopRun();
+    if (gbGrun) var msg = "تم تعطيل البوت في المجموعات";
+    else var msg = "تم تنشيط البوت في المجموعات";
+    setGruopRun(!gbGrun);
     await ctx.answerCbQuery(msg);
     showAdminPanel(ctx, "1", "update");
   });

@@ -9,7 +9,7 @@ menu.set = (index, text) => {
 	const list = menu.get();
 	if (list[index] === undefined) return false;
 	list[index] = text;
-	fs.writeFileSync("../menu/list.json", JSON.stringify(list,null,4), 'utf8');
+	fs.writeFileSync("./menu/list.json", JSON.stringify(list,null,4), 'utf8');
 	return true;
 }
 
@@ -19,35 +19,52 @@ menu.getData = (index) => {
 	return data;
 }
 
-menu.addData = (index,title,fileId) => {
+menu.addData = (index,title,fileId,localName,name) => {
 	const data = menu.getData();
 	var item = data.find(key => key.index == index);
 	if (!item) {
 		item = {index, files:[]}
 		data.push(item)
 	}
-	item.files.push({title:title,id:fileId});
+	item.files.push({title:title,id:fileId,localName,name});
 	fs.writeFileSync("./menu/data.json", JSON.stringify(data,null,4), 'utf8');
 
 }
 
 menu.getFileByTime = title => {
 	const data = menu.getData();
-	var fileId = null;
-	for (const btn of data) {
+	var result = null;
+	for (var index in data) {
+		const btn = data[index];
 		const file = btn.files.find(key => key.title == title);
 		if (file) {
-			fileId = file.id;
+			result = {file,index};
 			break;
 		}
 	}
-	return fileId;
+	return result;
+}
+
+menu.updateFileId = (index, oldID, newID) => {
+	const data = menu.getData();
+	const item = data[index];
+	const file = item.files.find( k => k.id == oldID );
+	if (file) {
+		file.id = newID
+		fs.writeFileSync("./menu/data.json", JSON.stringify(data,null,4), 'utf8');
+	}
+
 }
 
 menu.empty = (index) => {
 	const data = menu.getData();
 	const btn = data.find(key => key.index == index);
 	if (!btn) return menu.get()[index];
+	const docPath = process.cwd() + "/documents"
+	for (const file of btn.files) {
+		const file_path = `${docPath}/${file.localName}`;
+		fs.unlinkSync(file_path);
+	}
 	btn.files = [];
 	fs.writeFileSync("./menu/data.json", JSON.stringify(data,null,4), 'utf8');
 	return menu.get()[index];

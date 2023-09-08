@@ -49,9 +49,25 @@ async function base(ctx, next) {
 		.resize()
 	  )
 	} else {
-		const fileId = menu.getFileByTime(text);
-		if (fileId) {
-			ctx.replyWithDocument(fileId,replyTo);
+		const info = menu.getFileByTime(text);
+		if (info) {
+
+			const file = info.file
+			ctx.replyWithDocument(file.id,replyTo)
+			.then(() => {
+
+			})
+			.catch(async e => {
+				console.log('eeee');
+				const docPath = process.cwd() + "/documents";
+				const newFile = await ctx.replyWithDocument({
+					source:`${docPath}/${file.localName}`,
+					filename: file.name,
+				});
+
+				var newID = newFile.document.file_id;
+				menu.updateFileId(info.index, file.id, newID);
+			})
 			return;
 		}
 		if (type !== "group")
