@@ -36,19 +36,12 @@ async function command(ctx, next) {
             else ctx.reply(`فشلت العملية`);
             break;
         case 'addpdf1':
-            ctx.session.cmdData = text;
-            ctx.session.cmd = "addpdf2";
-            if (!text) return ctx.reply(`يرجى كتابة عنوان نصي صالح`);
-            ctx.reply("الآن ارسل الملف او المستند");
-            break;
-        case 'addpdf2':
             const addData = require("../menu/menu").addData;
             // ================================= اذا مو ملف =============================== //
             if (!ctx.message.document) return ctx.reply(`لقد ارسلت رسالة نصية يجب عليك ارسال ملف (مستند) لاضافته`);
             // ============================================================================= //
             const fileId = ctx.message.document.file_id;
             const name = ctx.message.document.file_name;
-            const title = ctx.session.cmdData;
             const index = ctx.session.cmdDataItem;
 
 
@@ -58,16 +51,12 @@ async function command(ctx, next) {
             const response = await request.get(url.href, { encoding: null });
             const file_ext = path.extname(name);
             const localName = `D${Date.now()}${file_ext}`;
-            addData(index, title, fileId, localName, name);
+            addData(index, fileId, localName, name);
             const docPath = process.cwd() + "/documents"
             fs.writeFileSync(`${docPath}/${localName}`, response);
-            ctx.reply("تم انشاء الملف بنجاح");
-            ctx.session.cmdData = null;
-            ctx.session.cmd = null;
-            ctx.session.cmdDataItem = null;
-            break;
-        case 'setCh':
-            ctx.session.cmd = null;
+            const keyboard = Markup.inlineKeyboard([[Markup.button.callback("تم", `done`)]]);
+            ctx.reply(`تم انشاء الملف بنجاح،
+            يمكنك ارسال المزيد من الملف، او اضغط تم للخروج`, keyboard);
             break;
 
         default:

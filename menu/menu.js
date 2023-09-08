@@ -19,24 +19,24 @@ menu.getData = (index) => {
 	return data;
 }
 
-menu.addData = (index,title,fileId,localName,name) => {
+menu.addData = (index,fileId,localName,name) => {
 	const data = menu.getData();
 	var item = data.find(key => key.index == index);
 	if (!item) {
 		item = {index, files:[]}
 		data.push(item)
 	}
-	item.files.push({title:title,id:fileId,localName,name});
+	item.files.push({id:fileId,localName,name});
 	fs.writeFileSync("./menu/data.json", JSON.stringify(data,null,4), 'utf8');
 
 }
 
-menu.getFileByTime = title => {
+menu.getFileByName = name => {
 	const data = menu.getData();
 	var result = null;
 	for (var index in data) {
 		const btn = data[index];
-		const file = btn.files.find(key => key.title == title);
+		const file = btn.files.find(key => key.name == name);
 		if (file) {
 			result = {file,index};
 			break;

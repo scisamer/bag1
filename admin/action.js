@@ -76,7 +76,7 @@ module.exports = function onAction(bot) {
     ctx.session.cmdDataItem = ctx.match[1];
     ctx.session.cmd = "addpdf1";
     ctx.reply(`
-    اكتب عنوان الملف
+   ارسل الملف ، يمكنك ارسال اكثر من ملف
     ارسل /cancel للالغاء
     `)
     await ctx.answerCbQuery();
@@ -93,6 +93,16 @@ module.exports = function onAction(bot) {
     if (!ctx.session.isAdmin) return;
     ctx.reply("ارسل النص الجديد");
     ctx.session.cmd = "settext";
+    await ctx.answerCbQuery();
+  });
+  
+  bot.action("done", async ctx => {
+    if (!ctx.session.isAdmin) return;
+    ctx.session.cmd = null;
+    ctx.session.cmdData = null;
+    ctx.session.cmdDataItem = null;
+    ctx.deleteMessage();
+    ctx.reply(`تم الانتهاء من عملية اضافة الملفات`);
     await ctx.answerCbQuery();
   });
 }

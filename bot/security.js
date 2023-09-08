@@ -6,13 +6,13 @@ const { getGruopRun } = require("./startStop");
 
 async function security(ctx, next) {
 
-	console.log(ctx);
+	// console.log(ctx);
 	const message = ctx.message ? ctx.message : (ctx.update && ctx.update.callback_query) ? ctx.update.callback_query.message : null;
 	if (!message) {
 		console.log("===================================================");
 		console.log(ctx);
 		console.log("===================================================");
-		process.exit();
+		return;
 	}
 
 	if (message.chat.type == "group") {
@@ -23,6 +23,7 @@ async function security(ctx, next) {
 
 	if (ctx.session == undefined) {
 		ctx.session = {};
+	}
 		var uid;
 		if (ctx.update.callback_query)
 		uid = ctx.update.callback_query.from.id;
@@ -41,7 +42,7 @@ async function security(ctx, next) {
 			ctx.session.isDev = ctx.session.group == 'dev';
 		}
 
-	}
+
 
 
 	next();

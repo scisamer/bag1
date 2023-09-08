@@ -13,6 +13,17 @@ async function base(ctx, next) {
 	var text = ctx.message.text;
 	var uid = ctx.message.from.id;
 	const type = ctx.message.chat.type;
+
+	if (! /group/.test(type)) {
+		return next();
+	}
+
+	// -------------- تفعيل في المجموعة فقط --------------
+	const g_id = ctx.update.message.chat.id;
+	const Group = await db.groups.asyncFindOne({ id: g_id });
+	if (Group == null) return next();
+	// ------------------------------------------------------
+
 	const index = menu.getIndexByText(text);
 	if (getRun() === false) return next();
 	const replyTo = type == "group" ? {reply_to_message_id: ctx.message.message_id} : {};
@@ -41,7 +52,7 @@ async function base(ctx, next) {
 	else if (index > -1) {
 		const data = menu.getData(index);
 		if (!data || data.files.length == 0) return ctx.reply("لا يوجد محتوى حاليا");
-		const btns = data.files.map(k => k.title);
+		const btns = data.files.map(k => k.name);
 		btns.push(back);
 		return await ctx.reply('اختر ما يناسبك', Markup
 		.keyboard(btns)
@@ -49,7 +60,7 @@ async function base(ctx, next) {
 		.resize()
 	  )
 	} else {
-		const info = menu.getFileByTime(text);
+		const info = menu.getFileByName(text);
 		if (info) {
 
 			const file = info.file
