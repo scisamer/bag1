@@ -38,26 +38,26 @@ async function base(ctx, next) {
 		.keyboard(menuList)
 		.oneTime()
 		.resize()
-	  )
+	  ), replyTo
 	}
 	else if (text == back) {
 		const menuList = menu.get();
 		return await ctx.reply('مرحبا بك', Markup
 		.keyboard(menuList)
 		.oneTime()
-		.resize()
+		.resize(), replyTo
 	  )
 	}
 
 	else if (index > -1) {
 		const data = menu.getData(index);
-		if (!data || data.files.length == 0) return ctx.reply("لا يوجد محتوى حاليا");
+		if (!data || data.files.length == 0) return ctx.reply("لا يوجد محتوى حاليا",replyTo );
 		const btns = data.files.map(k => k.name);
 		btns.push(back);
 		return await ctx.reply('اختر ما يناسبك', Markup
 		.keyboard(btns)
 		.oneTime()
-		.resize()
+		.resize(), replyTo
 	  )
 	} else {
 		const info = menu.getFileByName(text);
